@@ -1,0 +1,42 @@
+sources:
+  local-bookstore:
+    kind: sqlite
+    database: /data/bookstore.db
+
+tools:
+  count-books-by-genre:
+    kind: sqlite-sql
+    source: local-bookstore
+    statement: "SELECT COUNT(*) as Total_Books FROM books WHERE Genre = ?;"
+    description: "Use this to find out how many books exist in a specific genre."
+    parameters:
+      - name: genre
+        type: string
+        description: "The exact genre name (e.g., 'Sci-Fi', 'Thriller', 'Poetry', 'Comedy', 'Romance')"
+
+  search-book-details:
+    kind: sqlite-sql
+    source: local-bookstore
+    statement: "SELECT Product_Name, Product_Author, Sales_Price, Product_Rating, Book_Format FROM books WHERE Product_Name LIKE '%' || ? || '%';"
+    description: "Use this to look up specific details about a book."
+    parameters:
+      - name: book_title
+        type: string
+        description: "A word or phrase from the book's title."
+
+  top-rated-by-region:
+    kind: sqlite-sql
+    source: local-bookstore
+    statement: "SELECT Product_Name, Product_Author, Product_Rating FROM books WHERE Region = ? ORDER BY Product_Rating DESC LIMIT 5;"
+    description: "Use this to find the top 5 highest-rated books for a specific geographic region."
+    parameters:
+      - name: region
+        type: string
+        description: "The geographic region name (e.g., 'West', 'South', 'Midwest', 'Northeast')"
+
+  average-price-by-format:
+    kind: sqlite-sql
+    source: local-bookstore
+    statement: "SELECT Book_Format, ROUND(AVG(Sales_Price), 2) as Average_Price FROM books GROUP BY Book_Format;"
+    description: "Use this to get the average sales price of books broken down by their physical format (e.g., Hardcover, Paperback, Digital)."
+    # No parameters needed for this one, as it just aggregates the whole table!
